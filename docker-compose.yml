@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: medium-dockerizing-a-nodejs-and-mongodb-app
+    restart: always
+    env_file: .env
+    environment:
+      - MONGO_USERNAME=$MONGO_USERNAME
+      - MONGO_PASSWORD=$MONGO_PASSWORD
+      - MONGO_HOSTNAME=db
+      - MONGO_PORT=$MONGO_PORT
+      - MONGO_DB=$MONGO_DB
+    ports:
+      - "3100:3100"
+    volumes:
+      - .:/app
+      - node_modules:/home/node/app/node_modules
+    links:
+      - db
+
+  db:
+    image: mongo
+    container_name: medium-dockerizing-a-nodejs-and-mongodb-db
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD
+    volumes:
+      - dbdata:/data/db
+
+volumes:
+  dbdata:
+  node_modules:
